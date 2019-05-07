@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.5">
+        <link href="/styles/main.css" rel="stylesheet" type="text/css">
+        <title>MVVM中各类的用途和特征</title>
+    </head>
+    <body>
+        <div class="inner">
+            <h2>MVVM中各类的用途和特征</h2>
+            <P>首先看一下下面两张图</P>
+            <p><img src="/blog/2019/04/images/6.png"></p>
+            <p><img src="/blog/2019/04/images/7.png"></p>
+            <P>MVVM模式是Presentation Model模式的近似体，利用WPF的一些核心功能进行了优化，例如数据绑定，数据模板，命令和行为。</P>
+            <p>在MVVM模式中，View封装了UI和UI逻辑，ViewModel封装了presentation逻辑和状态，Model封装了业务逻辑和数据。View和ViewModel通过数据绑定，命令以及改变通知事件进行交互。ViewModel查询，观察和协调更新Model，转换，验证和聚合数据以便在View中显示。</p>
+        </div>
+        <script>
+            if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent))
+            {
+                document.body.classList.add('mobile');
+            }
+        </script>
+    </body>
+</html>

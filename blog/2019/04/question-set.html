@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.5">
+        <link href="/styles/main.css" rel="stylesheet" type="text/css">
+        <title>问题集</title>
+    </head>
+    <body>
+        <div class="inner">
+            <h2>问题与解答</h2>
+            <p></p>
+            <h3>参考王垠Blog的主页样式时,效果始终不一样</h3>
+            <p><img src="/blog/2019/04/images/1.png"/></p>
+            <p><img src="/blog/2019/04/images/2.png"/></p>
+            <p>用Firefox浏览器测试也是一样的效果,本地直接可以正常显示,后来不经意发现在地址栏右侧有一个带红X的安全图标,点开一看,奇迹发生了</p>
+            <p><img src="/blog/2019/04/images/3.png"/></p>
+            <p><img src="/blog/2019/04/images/4.png"/></p>
+            <p>后来查看源代码发现如下下图所示</p>
+            <p><img src="/blog/2019/04/images/5.PNG"/></p>
+            <p>现在明白是怎么回事了吧!最后将上面两行的http改为https就可以正常显示了。</p>
+        </div>
+        <script>
+            if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent))
+            {
+                document.body.classList.add('mobile');
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.5">
+        <link href="/styles/main.css" rel="stylesheet" type="text/css">
+        <title>日志记录的最佳实践(译)</title>
+    </head>
+    <body>
+        <div class="inner">
+            <h2>日志记录的最佳实践(译)</h2>
+            <p>本文翻译自Geshan的博客，<a href="https://geshan.com.np/blog/2019/03/follow-these-logging-best-practices-to-get-the-most-out-of-application-level-logging-slides/">原文地址</a>。</p>
+            <p>应用程序级别的日志是应用程序与你交谈的唯一方式。拥有值得称道的、搜索功能的、恰当的日志，就像在暗黑房间里的一盏明灯。</P>
+            <P>在任何问题的情况下，常常低估了充分利用日志的重要性。作为软件工程师，我们可以利用应用程序的日志来解决问题，并了解应用程序的健康状况。</P>
+            <p><strong>日志也有助于分析应用程序的性能</strong></p>
+            <p>几年前，我曾写过<a href="https://geshan.com.np/blog/2015/08/importance-of-logging-in-your-applications/">记录日志</a>的文章。本文重点介绍从应用程序级别进行日志记录时，可以遵循的最佳实践，以及它如何帮助你成为软件工程师。</p>
+            <p><img src="/blog/2019/04/images/logging-bp.jpg" /></p>
+            <h3>最佳实践一览</h3>
+            <p>下面是记录日志的主要最佳实践</p>
+            <h4>1、记录信息的最佳方式</h4>
+            <p>太多的信息是噪音，太少的信息也是不充分的。很难平衡记录日志的多少，但这是一项挑战。在微服务的情况下，还要考虑服务之间的可跟踪性，例如使用唯一的请求标识符。要记住的另一件事是日志是暂时的，而不是永久的。由于它们没有存储在数据库中，因此日志通常具有几天或几周的寿命。</p>
+            <h4>2、始终遵循日志级别</h4>
+            <p>Emergency级别的日志，意味着你的待命电话将在凌晨2点响起，但是Info级别的日志，不会打扰任何人。你必须同意一些团队标准，如<a href="https://tools.ietf.org/html/rfc5424">syslog one</a>。</p>
+            <h4>3、结构化日志</h4>
+            <p>在你的日志行中有一个结构，比如有一条消息和一个上下文数组来添加有关消息的更多信息。遵循商定的JSON标准进行日志记录。这使得解析和搜索变得容易。你甚至可以设置更多规则，例如日期是必须的，描述不能超过255个字符，上下文中的额外信息。拥有这些简单的规则，可以在需要时更轻松地找到日志。强烈建议提供带有日志行的上下文，例如在记录订单无法发送时添加订单的详细信息（当然不包括敏感的东西）</p>
+            <h4>4、小心记录日志（不要影响应用程序的性能）</h4>
+            <P>确保添加日志不会影响应用程序响应时间。尽可能以异步方式写入日志，日志甚至可以写入本地文件，并使用日志转发器发送到你选择的服务。你还可以根据你使用的语言/框架使用久经考验的库。使用队列也可以作为发送日志的选项，但请记住查看日志时可能存在延迟。</P>
+            <h4>5、使用合适的工具完成工作</h4>
+            <p>你选择运送、查看、搜索和排序日志的工具和服务是你团队的选择。根据预算，使用外部服务的兴趣，团队可以使用完全自我管理的堆栈，如ELK/Graylog，或使用Logentries/Sematext Logsense等服务进行完整的SAAS。主要思想是使用非常有效地满足你需求的工具。例如，如果你需要记录实时日志，使用队列可能不是最佳决策。因此，设计适合你需求的日志记录基础架构和堆栈。</p>
+            <h3>幻灯片</h3>
+            <p>我在二月份的工作场所做过关于“记录日志的最佳实践”的演讲，你可以在<a href="https://www.slideshare.net/geshan/logging-best-practices">slideshare</a>和<a href="https://speakerdeck.com/geshan/logging-best-practices">speaker deck</a>观看幻灯片</p>
+            <h3>结论</h3>
+            <p><strong>如果狗是人类最好的朋友，那么日志就是软件工程师最好的朋友</strong></p>
+            <p>完全充分的利用日志，并牢记有关日志记录的最佳实践</p>
+        </div>
+        
+        <script>
+            if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent))
+            {
+                document.body.classList.add('mobile');
+            }
+        </script>
+    </body>
+</html>

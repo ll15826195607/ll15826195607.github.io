@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.5">
+        <link href="/styles/main.css" rel="stylesheet" type="text/css">
+        <title>WPF Dispatcher是什么，如何使用它(译)</title>
+    </head>
+    <body>
+        <div class="inner">
+            <h2>WPF Dispatcher是什么，如何使用它(译)</h2>
+            <p>本文翻译自dotnetpattern上的一篇文章，<a href="http://dotnetpattern.com/wpf-dispatcher">原文地址</a>。</p>
+            <p>
+               在学习Dispatcher是什么，以及我们为什么需要它之前，需要理解线程Apartments是什么？
+            </p>
+            <h3>线程Apartment</h3>
+            <p>
+                进程里的所有对象都分组到Apartments里。
+            </p>
+            <p>
+                有两种类型的线程Apartments:
+            </p>
+            <ul>
+                <li>
+                    STA(Single-Threaded Apartments)，单线程Apartments
+                </li>
+                <li>
+                    MTA(Multi-Threaded Apartments)，多线程Apartments
+                </li>
+            </ul>
+            <h4>单线程Apartments(STA)</h4>
+            <p>STA仅仅包含一个线程。此Apartments的所有对象都只能从这个线程接收方法调用。对象不需要同步，因为所有方法调用都是从单个线程同步进行的。</p>
+            <P>
+                单线程Apartments需要一个消息队列来处理来自其他线程的调用。当其他线程调用STA线程中的对象时，方法调用将在消息队列中排队，并且STA对象将从该消息队列接收调用。
+            </P>
+            <h4>多线程Apartments(MTA)</h4>
+            <p>多线程Apartments包含一个或多个线程。此Apartments中的所有对象都可以从任何线程接收调用。所有对象都负责维护其数据的同步。</p>
+            <h3>WPF Dispatcher</h3>
+            <p>WPF应用程序必须在STA线程中启动。STA有一个消息队列来同步其他Apartments里的方法调用。以及Apartments外的其他线程无法直接更新对象。必须将方法调用放入消息队列已更新STA中的对象。</p>
+            <p><em><strong>&nbsp; Dispatcher 拥有STA线程的消息队列</strong></em></p>
+            <p>当你运行WPF应用程序时，它会自动创建一个新的Dispatcher对象并调用其Run方法。Run方法用于初始化消息队列。</p>
+            <p>当WPF应用程序启动时，它创建两个线程:</p>
+            <ol>
+                <li>
+                    渲染线程
+                </li>
+                <li>
+                    UI线程
+                </li>
+            </ol>
+            <p>UI线程负责所有用户输入，处理事件，绘制屏幕并运行应用程序代码。渲染线程在后台运行，用于渲染WPF屏幕。</p>
+            <p>WPF Dispatcher与UI线程相关联。UI线程在Dispatcher对象内调用排队方法。每当更改屏幕或执行任何事件，或在后台代码中调用方法时，所有这些都发生在UI线程中，UI线程将这些方法排入Dispatcher队列里。Dispatcher将以同步顺序执行这些消息队列里的方法。</p>
+            <h4>所有WPF对象是如何引用单个Dispatcher？</h4>
+            <p>每个WPF控件，无论是Window,button还是textbox，都继承自DispatcherObject。下面是类继承机构图。</p>
+            <p><img src="/blog/2019/04/images/wpf-class-hierarchy-5.png"/></p>
+            <p>当WPF创建一个Button实例时，会调用DispatcherObject的受保护的构造函数。DispatcherObject获得一个Dispatcher类型的属性，它将当前线程的引用保存到DispatcherObject的Dispatcher属性。</p>
+            <h3>为什么需要Dispatcher</h3>
+            <p>WPF在幕后用Dispatcher对象工作，在UI线程工作时，我们不需要使用Dispatcher。</p>
+            <p>当我们创建一个新的线程来分担工作并想要从该新线程更新UI时，必须需要使用Dispatcher。只有Dispatcher可以从非UI线程更新UI中的对象。</p>
+            <h4>Invoke</h4>
+            <p>Invoke方法采用Action或委托并同步执行该方法。这意味着在Dispatcher完成方法的执行之前它不会返回。</p>
+            <p>这里是Invoke的一个例子：</p>
+            <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+public partial class MainWindow : MainWindow
+{
+    public MainWindow()
+    {
+        InitializeComponent();
+        Task.Factory.StartNew(() =&gt;
+            {
+                InvokeMethodExample();
+            });
+    }
+
+    private void InvokeMethodExample()
+    {
+        Thread.Sleep(2000);
+        Dispatcher.Invoke(() =&gt;
+        {
+            btn1.Content = &quot;By Invoke&quot;;
+        });
+    }
+}
+            </code></pre></div></div>
+            <p>上面的代码将使用Task.Factory创建一个新线程并立即启动该线程。在InvokeMethodExample中，如果我们尝试直接调用以更新btn1对象的Content属性。它将抛出System.InvalidOperationException。我们使用了Dispatcher的Invoke方法。在Invoke方法中，传递Action并更新Button对象的Content属性。它不会抛出任何错误并成功更新Content属性。</p>
+            <h4>BeginInvoke</h4>
+            <p>BeginInvoke方法接受一个Delegate，但它以异步方式执行该方法。这意味着它在调用方法之前理解返回。</p>
+            
+            <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+public MainWindow()
+{
+    InitializeComponent();
+    Task.Factory.StartNew(() =&gt;
+    {
+        BeginInvokeExample();
+    });
+}
+
+private void BeginInvokeExample()
+{
+    DispatcherOperation op = Dispatcher.BeginInvoke((Action)(() =&gt; 
+    {
+        btn1.Content = &quot;By BeginInvoke&quot;;
+    }));
+}
+            </code></pre></div></div>
+            <p>BeginInvoke返回一个DispatcherOperation对象。此对象可用于了解操作的状态是否已完成。它还提供两个事件Aborted和Completed。</p>
+        </div>
+        
+        <script>
+            if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent))
+            {
+                document.body.classList.add('mobile');
+            }
+        </script>
+    </body>
+</html>

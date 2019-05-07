@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.5">
+        <link href="/styles/main.css" rel="stylesheet" type="text/css">
+        <title>使用Redis Pub/Sub和StackExchange.Redis实现一个简单的聊天应用程序</title>
+    </head>
+    <body>
+        <div class="inner">
+            <h2>使用Redis Pub/Sub和StackExchange.Redis实现一个简单的聊天应用程序</h2>
+            <p>你曾经想过编写一个聊天应用程序？本文将利用Redis pub/sub通信模式和StackExchange.Redis带你实现一个简单的聊天应用程序。哪怕你不知道Redis pub/sub和StackExchange.Redis也没有关系，因为它们足够简单。</p>
+            <h3>安装Redis服务</h3>
+            <p>Redis官网建议最好在Linux操作系统上部署Redis服务，因为Linux是Redis开发和测试的操作系统，做了大量的测试工作。本文为了尽可能的简单，就在Windows 7上部署Redis服务的实验环境。</p>
+            <p>从<a href="https://github.com/MicrosoftArchive/redis/releases">https://github.com/MicrosoftArchive/redis/releases</a>下载Redis-x64-3.0.504.msi安装文件。</p>
+            <p><img src="/blog/2019/04/images/redis download.png" /></p>
+            <p>安装并不难，只是在出现如下步骤时，最好勾选红色方框部分。安装完成后Redis服务会自动启动起来。</p>
+            <p><img src="/blog/2019/04/images/install redis.png"/></p>
+            <h3>初识Redis Pub/Sub通信模式</h3>
+            <p>Pub/Sub（发布/订阅）模式中最重要的三个概念：发布者，订阅者，频道。发布者与订阅者彼此之间并不知道对方的存在。发布者只管向某频道或多个频道发送消息，订阅者只需订阅自己感兴趣的频道来接收消息。</p>
+            <p><img src="/blog/2019/04/images/pubsub1.png"/></p>
+            <p>打开三个cmd窗口，分别模拟上图所示的客户端A、客户端B和客户端C。在每个cmd窗口运行:</p>
+            <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+redis-cli -h 127.0.0.1 -p 6379
+            </code></pre></div></div>
+            <p><img src="/blog/2019/04/images/pubsub2.png"/></p>
+            <p>一旦客户端B向Redis Server订阅了mychannel这个频道后，无论哪个客户端向mychannel这个频道发送消息，客户端B都可以收到相信的消息。</p>
+            <p><strong>需要注意的是：在订阅某个频道时，不管频道是否存在，都会订阅成功。</strong></p>
+            <h3>利用StackExchange.Redis创建一个简单的聊天室</h3>
+            <p>StackExchange.Redis是.NET语言（C＃等）的高性能通用redis客户端。</p>
+        </div>
+        <script>
+            if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent))
+            {
+                document.body.classList.add('mobile');
+            }
+        </script>
+    </body>
+</html>

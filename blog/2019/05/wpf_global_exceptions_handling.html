@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.5">
+        <link href="/styles/main.css" rel="stylesheet" type="text/css">
+        <title>WPF全局异常处理(译)</title>
+    </head>
+    <body>
+        <div class="inner">
+            <h2>WPF全局异常处理(译)</h2>
+            <p>本文翻译自CodeProject上的一篇文章，<a href="https://www.codeproject.com/Articles/1089718/Global-Exceptions-Handling-in-WPF">原文地址</a>。</p>
+            <p>你确定你知道以下事件的区别吗？</p>
+            <ul>
+                <li>Dispatcher.UnhandledException</li>
+                <li>Application.DispatcherUnhandledException</li>
+                <li>AppDomain.UnhandledException</li>
+                <li>TaskScheduler.UnobservedTaskException</li>
+            </ul>
+            <p>我的大学院长总是说，编程的第一条规则是“程序不应该有任何错误”，编程的第二条规则是“没有任何错误编写的程序”。所以，有时候，我很抱歉，但是发生了不可捕获的异常，它们会自由自在地飞翔，直到它们到达执行堆栈的顶端，从而破坏你的程序。全局异常处理的存在是对这种可怕的情况做出反应。</p>
+            <p>有一堆事件在发生未处理的异常时触发。让我们来看看哪些事件可以帮助我们。我们提到的最有用的事件是：</p>
+            <ul>
+                <li>Dispatcher.UnhandledException</li>
+                <li>Application.DispatcherUnhandledException</li>
+                <li>AppDomain.UnhandledException</li>
+                <li>TaskScheduler.UnobservedTaskException</li>
+            </ul>
+            <h3>调度线程异常</h3>
+            <p>前两个事件区别很小。第二个捕获来自主UI调度程序线程的异常，而第一个捕获来自特定UI调度程序线程的异常。通常，它们是相同的，因为在99％的情况下，WPF应用程序只有一个UI线程，因此，这两个事件都会从主UI线程捕获同一线程中的异常。事情是，WPF不限于只有一个UI线程。您可以使用相应的Dispatcher创建另一个UI线程。在这种情况下，您必须将您的处理程序附加到第一个调度程序和第二个调度程序的UnhandledException事件。你一辈子都不会遇到这种情况的机会非常高。所以，一般来说，你可以自由地处理这些事件。</p>
+            <h3>工作线程异常</h3>
+            <p>应用程序中的任何工作线程都可能会引发异常。一般来说，你可以通过直接使用Thread类或任务的现代API来产生工作者线程。关于全局异常处理，这些情况是不同的。如果任务发生异常，则只能在TaskScheduler.UnobservedTaskException中捕获该异常。相反，如果从任何其他线程（除了Tasks产生的UI线程和线程除外）抛出异常，则只能在AppDomain.UnhandledException事件中捕获该异常。您实际上不能处理AppDomain.UnhandledException事件中的异常。</p>
+            <p>你可以只记录它。如果您希望应用程序保持活动状态，则需要在应用程序的配置文件中添加一个指令：</p>
+            <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;configuration&gt;
+&lt;runtime&gt;
+&lt;legacyUnhandledExceptionPolicy enabled="1" /&gt;
+&lt;/runtime&gt;
+&lt;/configuration&gt;
+            </code></pre></div></div>
+            <p>自.NET 4.5发布以来，UnobservedTaskException不会终止应用程序。如果您想恢复旧的行为，您应该在配置文件中添加以下指令：</p>
+            <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;configuration&gt;
+&lt;runtime&gt;
+&lt;ThrowUnobservedTaskExceptions enabled="true"/&gt;
+&lt;/runtime&gt;
+&lt;/configuration&gt;
+            </code></pre></div></div>
+            <p>顺便说一下，任务中发生的异常不会被抛出，直到相应的任务不被GC收集。</p>
+        </div>
+        <script>
+            if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent))
+            {
+                document.body.classList.add('mobile');
+            }
+        </script>
+    </body>
+</html>

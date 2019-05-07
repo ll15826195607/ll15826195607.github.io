@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.5">
+        <link href="/styles/main.css" rel="stylesheet" type="text/css">
+        <title>WCF异常处理(译)</title>
+    </head>
+    <body>
+        <div class="inner">
+            <h2>WCF异常处理(译)</h2>
+            <p>本文翻译自CodeProject上的一篇文章，<a href="https://www.codeproject.com/Tips/834984/Exception-Handling-in-WCF">原文地址</a>。</p>
+            <h3>介绍</h3>
+            <p>在本文中，我想展示在WCF应用程序中如何添加异常处理。在WCF应用程序中进行异常处理，与其他.NET应用程序略有不同。原因在于，WCF服务可能需要一个不是使用.NET框架技术实现的客户端。因此，在WCF应用程序中，实现异常处理，需要略微不同的方法。</p>
+            <h3>背景</h3>
+            <p>本文假设读者有实现WCF服务端和客户端的经验。本文不是介绍WCF的文档。</p>
+            <p>WCF服务想客户端应用程序公开某些服务（或功能）。例如，一个财务WCF服务可以公开与增值税计算相关的服务或计算按揭贷款。WCF客户端连接WCF服务端并调用公开的服务。所有的都很好。然而，WCF服务抛出异常，会发生什么情况呢？本文将从客户端和WCF应用程序的服务端解决这个问题。 </p>
+            <ul>
+                <li>WCF服务端如何向客户端抛出异常？</li>
+                <li>WCF客户端如何捕获WCF服务端引发的异常？</li>
+            </ul>
+            <p>如前所述，WCF服务公开了客户端应用程序所使用的某些服务（或功能）。这些客户端应用程序不一定是.NET应用程序。因此，WCF服务不应该向客户端抛出.NET异常，因为客户端WCF应用程序无法理解它，除非它是.NET应用程序。WCF服务需要做的是抛出一个语言不可预知的异常，以及用任何语言编写的客户端都可以理解抛出的异常，包括没有使用.NET框架实现的客户端。因此，一个JAVA客户端应该能够使用WCF服务，并且理解当WCF服务抛出异常时返回的异常信息。</p>
+            <p>那么WCF服务如何如何抛出客户端不可预知的异常呢？</p>
+            <h3>抛WCF服务异常</h3>
+            <P>FaultException是一个.NET类，它被设计用来与WCF应用程序一起使用。它们是强类型的SOAP故障，可以向任何客户端抛出，而不考虑其底层技术。</P>
+            <p>在下面的示例代码中，WCF服务实现了一个try/catch块。catch块抛出类型错误的异常。</p>
+            <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+try
+{
+    //your service code goes here
+}
+catch (Exception ex)
+{
+    throw new FaultException(ex.Message);
+}                
+            </code></pre></div></div>
+            <p>也可以使用FaultCode和FaultReason类对FaultException类进行初始化，以便将更有意义的信息添加到WCF服务中。</p>
+            <p>下面的示例代码将FaultCode添加到异常。</p>
+            <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+try
+{
+    //your service code goes here
+}
+catch (Exception ex)
+{
+    throw new FaultException(ex.Message, new FaultCode("Add SOAP fault code here"));
+}              
+            </code></pre></div></div>
+            <p>下面的示例代码将FaultCode和FaultReason都添加到异常。</p>
+            <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+try
+{
+  //your service code goes here
+}
+catch (Exception ex)
+{
+  throw new FaultException(new FaultReason("Add SOAP fault reason here"), new FaultCode("Add SOAP fault code here"), ex.Message);
+}             
+            </code></pre></div></div>
+            <p>因此，完全可以使用上述类将有意义的信息返回给WCF客户端。还可以指定一个细节对象，该对象可以包含您要返回到WCF客户端的更具体或自定义的信息。</p>
+            <h3>添加特定的信息到你的WCF异常</h3>
+            <p>你可以使用一个&lt;TDetail&gt;类来实例化FaultException类。&lt;TDetail&gt;类可能包含更详细的特定于异常的信息，或者更详细的信息，例如来自InnerException的异常信息。为了进行调试，你可以添加TargetSite，Source和StackTrace。</p>
+            <p>示例使用可序列化的&lt;TDetail&gt;对象实例化FaultException类。</p>
+            <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+try
+{
+    //your service code goes here
+}
+catch (Exception ex)
+{
+    throw new FaultException<TDetail>(TDetail);
+}             
+            </code></pre></div></div>
+            <p>这里是一个示例，说明如何实现TDetail对象并使用它将更详细的异常信息返回给WCF客户端。</p>
+            <h4>实现&lt;TDetail&gt;类</h4>
+            <p>此处，我将实现&lt;TDetail&gt;类，它添加了对调试/诊断有用的异常信息。但是，你自己的&lt;TDetail&gt;类可以包含任何你想包含的信息。例如，如果服务返回一个Customer对象，那么你可能想返回一个&lt;TDetail&gt;对象，它公开Customer ID（允许客户端显示特定的错误信息）。</p>
+            <p>首先，我们需要定义我们的&lt;TDetail&gt;类。这个类被称为UnexceptedServiceFault，以及它将包含于公开调试信息的属性，如Message，StackTrace，Source和Target。这些属性的值将由Exception提供。</p>
+            <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+using System.Runtime.Serialization;
+
+namespace Common
+{
+    /// <summary>
+    /// Generic WCF service exception. 
+    /// </summary>
+
+    [DataContract]
+    public class UnexpectedServiceFault
+    {
+        [DataMember]
+        public string ErrorMessage { get; set; }
+        [DataMember]
+        public string StackTrace { get; set; }
+        [DataMember]
+        public string Target { get; set; }
+        [DataMember]
+        public string Source { get; set; }
+    }
+}            
+            </code></pre></div></div>
+            <p>我们的服务代码使用UnexceptedServiceFault类，如下面的示例代码。</p>
+            <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+try
+{
+    //your service code goes here
+}
+catch (Exception ex)
+{
+    throw new FaultException<UnexpectedServiceFault>(
+                    new UnexpectedServiceFault { ErrorMessage = ex.Message, 
+                    Source = ex.Source, StackTrace = ex.StackTrace, Target = ex.TargetSite.ToString() },
+                    new FaultReason(string.Format(CultureInfo.InvariantCulture, 
+                    "{0}", "Service fault exception")));
+}           
+            </code></pre></div></div>
+            <p>现在我们已经定义了如何向WCF客户端抛出有意义的异常信息。下一步是捕获客户端上的异常。</p>
+            <h3>在客户端捕获WCF服务异常</h3>
+            <p>下面的示例代码展示了WCF客户端应用程序如何捕获WCF服务抛出的异常。</p>
+            <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+try
+{
+    //client code goes here
+}
+catch (TimeoutException ex)
+{
+    Console.WriteLine("Service has timed out");
+    Console.WriteLine(ex.Message);
+}
+catch (FaultException<UnexpectedServiceFault> ex)
+{
+    Console.WriteLine("Service error occurred: {0}", ex.Message);
+    Console.WriteLine("service message: {0}", ex.Detail.ErrorMessage);
+    Console.WriteLine("source: {0}", ex.Detail.Source);
+    Console.WriteLine("target: {0}", ex.Detail.Target);
+    Console.WriteLine("stack trace: {0}", ex.Detail.StackTrace);
+}
+catch (FaultException ex)
+{
+    Console.WriteLine("Service error occurred: {0}", ex.Message);
+}
+
+catch (CommunicationException ex)
+{
+    Console.WriteLine("Communications error occurred: {0}", ex.Message);
+}
+catch (Exception ex)
+{
+    Console.WriteLine("Error has occurred");
+    Console.WriteLine(ex.Message);
+}
+            </code></pre></div></div>
+            <P>WCF客户端代码检查FaultException&lt;UnexceptedServiceFault&gt;和FaultException。因此，WCF服务可能会抛出一般的异常和更多的特定异常，并且两者都将被WCF客户端捕获和处理。</P>
+            <h3>总结</h3>
+            <p>我再所有的WCF服务应用程序中都使用这种技术。一旦定义了类，你就可以根据需要向异常添加更多信息，并以任何合适的方式处理它们。如果你想让我进一步详细说明这个建议的内容，请随时留下你的评论。</p>
+        </div>
+        
+        <script>
+            if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent))
+            {
+                document.body.classList.add('mobile');
+            }
+        </script>
+    </body>
+</html>

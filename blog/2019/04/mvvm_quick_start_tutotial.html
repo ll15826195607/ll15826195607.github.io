@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.5">
+        <link href="/styles/main.css" rel="stylesheet" type="text/css">
+        <title>WPF/MVVM 快速入门教程</title>
+    </head>
+    <body>
+        <div class="inner">
+            <h2>WPF/MVVM 快速入门教程</h2>
+            <p>WPF社区似乎对用MVVM模式进行WPF开发非常满意。那是因为WPF支持强大的数据绑定技术，MVVM模式非常适合WPF。MVVM模式提供了一个非常好的层结构来管理UI状态以及聚合、转换、格式化数据。</p>
+            <h3>分层结构的好处</h3>
+            <p>WPF使用MVVM封装UI视图，UI后台逻辑以及最终的模型和业务逻辑。这里是将应用程序任务分到不同层的三个最重要的好处:</p>
+            <ol>
+                <li><strong>增强代码重用</strong> —— MVMM使你能够重用几乎所有代码。 </li>
+                <li><strong>可测试性</strong> —— 使用UI自动化工具或库进行UI测试很难。测试类库要容易得多。使用MVVM，你可以将UI后台逻辑封装到ViewModel类中，并使用普通的单元测试进行测试。</li>
+                <li><strong>更容易维护</strong> —— 如果你必须改变一些东西（随着时间的推移必然会发生，相信我），你知道确切的位置。 </li>
+            </ol>
+        </div>
+        
+        <script>
+            if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent))
+            {
+                document.body.classList.add('mobile');
+            }
+        </script>
+    </body>
+</html>

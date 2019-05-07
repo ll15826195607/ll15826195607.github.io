@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.5">
+        <link href="/styles/main.css" rel="stylesheet" type="text/css">
+        <title>WPF线程模型</title>
+    </head>
+    <body>
+        <div class="inner">
+            <h2>WPF线程模型</h2>
+            <p>
+                WPF旨在帮助开发人员避免线程化的困难。因此，大多数WPF开发人员不必编写使用多个线程的接口。由于多线程程序复杂且难以调试，所以存在单线程解决方案时，应避免使用多线程。
+            </p>
+            <p>
+                然而，无论多么好的架构，任何UI框架都无法为各种问题提供单线程解决方案。WPF很接近了，但仍然存在多个线程改善用户界面(UI)响应或改善应用程序性能的情况。在讨论一些背景后，本文会探讨其中一些情况，然后讨论一些较低级别的细节。
+            </p>
+            <p>
+                注意:本主题通过使用BeginInvoke方法进行异步调用来讨论线程。你也可以使用InvokeAsync异步调用方法，此方法可以用一个Action Func<TResult>作为参数。InvokeAsync方法返回一个DispatcherOperation或者DispatcherOperation<TResult>，返回值带有一个Task属性。你可以使用await关键字与DispatcherOperation或关联的Task一起使用。如果你需要同步调用，可以调用DispatcherOperationWait扩展方法。有关使用Task执行异步操作的更多信息，请看Task Parallelism。Invoke方法也可以带Action或Func<TResult>参数。通过传入Action或Func<TResult>委托，你可以使用Invoke方法进行同步调用。
+            </p>
+            <h3>概述和Dispatcher</h3>
+        </div>
+        
+        <script>
+            if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent))
+            {
+                document.body.classList.add('mobile');
+            }
+        </script>
+    </body>
+</html>

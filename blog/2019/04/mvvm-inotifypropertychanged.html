@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.5">
+        <link href="/styles/main.css" rel="stylesheet" type="text/css">
+        <title>Model,还是ViewModel</title>
+    </head>
+    <body>
+        <div class="inner">
+            <h2>Model,还是ViewModel</h2>
+            <p>在项目开发过程中，遇到了一个棘手的问题：INotifyPropertyChanged接口到底应该在ViewModel里实现，还是在Model里实现？</p>
+        </div>
+        <script>
+            if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent))
+            {
+                document.body.classList.add('mobile');
+            }
+        </script>
+    </body>
+</html>

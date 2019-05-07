@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.5">
+        <link href="/styles/main.css" rel="stylesheet" type="text/css">
+        <title>log4net入门教程</title>
+    </head>
+    <body>
+        <div class="inner">
+            <h2>log4net入门教程</h2>
+            <p>学习如何使用log4net而不用担心它。停止复制配置文件，并找出如何使log4net完全符合你的要求。</p>
+            <h3>介绍</h3>
+            <p>对于.NET平台，log4net是最好的日志工具之一。该软件是如何进行日志记录的黄金标准。它简单，强大且可扩展。最好的部分是它是FOSS社区的一部分。还有什么比这更好的？我看到的一件事是，在我看来，有点缺乏一个关于如何使用log4net的直接教程。该文档深入介绍了如何使用该软件，但它有点模糊。基本上，如果你已经知道log4net可以做什么，而你只想知道语法，那么文档就适合你。那里的教程通常涵盖一个类型系统。我希望至少添加到那里的教程，也许我可能只是提供一个完整的教程，包括我遇到的一些问题。以下示例和信息基于log4net组提供的文档。</p>
+            <h3>视频教程</h3>>
+            <p>作为本文的补充，我在YouTube上创建了一个视频教程，该教程将介绍本文中的内容。虽然这篇文章本身已经完成，并且随着log4net的版本发生了变化而得到了更新，但我发现有些人不仅要阅读有关内容而且还要看到它（我就是其中之一）。因此，在C#中创建了视频<a href="https://youtu.be/2lAdQ_QwNww">应用程序日志记录：log4net教程</a>。希望你喜欢它，以及本文的其余部分。</p>
+            <h3>基础</h3>>
+            <p>log4net有三部分。包括配置，安装和调用。配置工作通常是在app.config或web.config文件进行。我们将在下面深入讨论这个问题。如果你希望通过使用单独的配置文件获得更大的灵活性，请参阅“远离app.config或web.config”部分内容。无论你选择存储配置信息，代码设置基本上都是需要调用的几行内务处理，以便设置和实例化与记录器的连接。最后，最简单的部分是呼叫本省。如果你做对了，这很简单，也是最容易理解的。</p>
+            <h3>日志记录级别</h3>
+            <p>有七个日志记录级别，其中五个可以在你的代码中调用。它们分别如下(最高位于列表顶部):</p>
+            <ol>
+                <li>OFF - 什么都不记录</li>
+                <li>FATAL</li>
+                <li>ERROR</li>
+                <li>WARN</li>
+                <li>INFO</li>
+                <li>DEBUG</li>
+                <li>ALL - 所有都记录</li>
+            </ol>
+            <p>这些级别将在你的代码和配置文件中多次使用。这些级别代表什么并没有设定规则（第一个和最后一个除外）。</p>
+            <h3>配置文件</h3>
+            <p>设置log4net记录器的标准方法是使用桌面应用程序中的app.config或web应用程序中的web.config文件。需要在配置文件中放置一些信息才能使其与log4net一起正常工作。这些部分将告诉log4net如何配置自己。无需重新编译应用程序即可更改设置，这是配置文件的重点。</p>
+            <h4>根节点</h4>
+            <p>你需要有一个根节点来容纳顶级记录器引用。这写是从基本记录器(Root)继承信息的记录器。根节点所包含的唯一其他内容是记录的最低级别。由于所有内容都从root继承，因此没有appender会将信息记录在此处指定的信息下。这是一种快速控制应用程序中日志记录级别的简便方法。下面是一个默认级别为INFO的示例（这意味着将忽略DEBUG消息）以及对应在root下启用的两个appender的引用:</p>
+        <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<root>
+    <level value="INFO"/>
+    <appender-ref ref="FileAppender"/>
+    <appender-ref ref="ConsoleAppender" />
+</root>
+            </code></pre></div></div>
+            <h4>额外的日志记录器</h4>
+            <p>有时你会想要了解有关应用程序特定部分的更多信息。log4net通过允许你指定除根记录器之外的其他记录器引用来预期这一点。例如，这是我在配置文件中放置的另一个记录器，用于记录在OtherClass类对象内发生的控制台消息:</p>
+            <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<logger name="Log4NetTest.OtherClass">
+    <level value="DEBUG"/>
+    <appender-ref ref="ConsoleAppender"/>
+</logger>
+            </code></pre></div></div>
+        </div>
+        
+        <script>
+            if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent))
+            {
+                document.body.classList.add('mobile');
+            }
+        </script>
+    </body>
+</html>

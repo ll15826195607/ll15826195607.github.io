@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.5">
+        <link href="/styles/main.css" rel="stylesheet" type="text/css">
+        <title>WPF/MVVM快速入门教程</title>
+    </head>
+    <body>
+        <div class="inner">
+            <h2>WPF/MVVM快速入门教程</h2>
+            <P>假设你对C#有一个很好的理解，那么开始使用WPF并不是一件难事。我刚开始看WPF时，并没有找到很多有用的MVVM教程。希望本文能够解决这个问题。</P>
+            <p>与学习任何新技术一样，你可以获得事后的好处。从我的角度来看，我遇到的几乎所有关于WPF的教程都不适用于以下几个原因之一:</p>
+            <ul>
+                <li>例子都在XAML中。</li>
+                <li>例子掩盖了实际上会让你的生活更轻松的关键事实。</li>
+                <li>例子尝试展示许多对你无帮助无意义的WPF/XAML功能。</li>
+                <li>例子使用的类具有与框架关键字太相似的属性，因此很难在XAML代码中将其标识为用户定义(ListBox GroupStyle的Name属性对于初学者来说是一个彻头彻尾的头痛)</li>
+            </ul>
+            <p>因此，为了解决这个问题，我写了这篇文章。这篇文章可能不是100%正确，甚至不是"真实的方式"，但它将说明我希望我在6个月前在一个地方找到的要点。</p>
+            <P>我将快速介绍一些主题，然后展示一个解释或演示每个要点的示例。因此，我并没有真正尝试过使用GUI，这不是本文的重点(参见上面的要点)</P>
+            <p><em><strong>&nbsp; 由于教程有点长，为了简洁起见，我省略了很多代码，因此请下载附带的zip文件，并查看示例(.NET 4.0/VS2010)。</strong></em>每个示例都基于前一个示例。</p>
+            <h3>基础</h3>
+            <ol>
+                <li>WPF最重要的是数据绑定。简而言之，你有一些数据，通常是某种类型的集合，并且你希望将其显示给用户。你可以将数据绑定到XAML中。</li>
+                <li>WPF有两部分，XAML描述了你的GUI布局和效果，以及与XAML相关联的后台代码。</li>
+                <li>组织你的代码，最新且可能最有用的方法时使用MVVM模式：Model，View，ViewModel。这样做的目的是确保你的View包含最少（或者没有）代码，并且应该只是XAML。</li>
+            </ol>
+            <h3>你需要知道的关键点</h3>
+            <ol>
+                <li>你应该使用ObservableCollection&lt;&gt;>保存集合数据。不是List，也不是Dictionary，而是用ObservableCollection。"Observable"这个词就是这里的线索：WPF窗口需要能够“观察”你的数据集。此集合类实现了WPF使用的某些接口。</li>
+                <li>每个WPF控件（包括Window）都有一个DataContext，而Collection控件有一个ItemSource属性可以用来绑定。</li>
+                <li>接口INotifyPropertyChanged将广泛用于GUI和代码之间传递数据的任何变化。</li>
+            </ol>
+            <h3>示例1:大多数情况下，是错误的做法</h3>
+            <p>示例是开始的最佳方式。我们将从Song类开始，而不是通常的Person类。我们可以将songs安排到Albums，或一个大的集合里，或Artist。一个简单的Song类如下：</p>
+        </div>
+        <script>
+            if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent))
+            {
+                document.body.classList.add('mobile');
+            }
+        </script>
+    </body>
+</html>
