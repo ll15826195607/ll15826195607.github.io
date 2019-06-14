@@ -8,21 +8,18 @@
     </head>
     <body>
         <div class="inner">
-            <h2>C# Object Clone Wars</h2>
-            <h2>C# 对象克隆战争</h2>
+            <h2>C# Object Clone Wars(C# 对象克隆战争)</h2>
             <p>Cloning C# objects is one of those things that appears easy but is actually quite complicated with many “gotchas.” This article describes the most common ways to clone a C# object.</p>
             <p>克隆C#对象是一件看似容易，实际比较复杂的事情，并且有许多的"陷阱"。本文介绍克隆C#对象的最常用方法。</p>
-            <h3>Shallow vs. Deep Cloning</h3>
-            <h3>浅克隆 Vs. 深克隆</h3>
+            <h3>Shallow vs. Deep Cloning(浅克隆 vs. 深克隆)</h3>
             <p>There are two types of object cloning: shallow and deep. A shallow clone copies the references but not the referenced objects. A deep clone copies the referenced objects as well.</p>
             <p>有两种对象克隆类型：浅克隆和深克隆。浅克隆复制引用但不复制引用对象。深克隆还会复制引用对象。</p>
             <p>Hence, a reference in the original object and the same reference in a shallow-cloned object both point to the same object. Whereas a deep-cloned object contains a copy of everything directly or indirectly referenced by the object. See <a href="https://en.wikipedia.org/wiki/Object_copying">wikipedia</a> for a detailed explanation.</p>
-            <p>因此，原始对象中的引用和浅克隆对象中的相同引用都指向同一个对象。而深克隆对象包含对象直接或间接引用的所有内容的副本。有关详细说明，请参阅<a href="https://en.wikipedia.org/wiki/Object_copying">维基百科</a></p>
+            <p>因此，原始对象中的引用和浅克隆对象中的相同引用都指向同一个对象。而深克隆对象包含对象直接或间接引用的所有内容的副本。有关详细说明，请参阅<a href="https://en.wikipedia.org/wiki/Object_copying">维基百科</a>。</p>
             <p><img src="/blog/2019/06/images/objectclone-thumb.jpg" /></p>
-            <h3>ICloneable Interface</h3>
-            <h3>ICloneable接口</h3>
+            <h3>ICloneable Interface(ICloneable接口)</h3>
             <p>The ICloneable interface contains a single Clone method, which is used to create a copy of the current object.</p>
-            <p></p>
+            <p>ICloneable接口包含单个Clone方法，该方法用于创建当前对象的副本。</p>
             <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 public interface ICloneable
 {
