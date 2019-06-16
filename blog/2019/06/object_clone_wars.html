@@ -26,6 +26,57 @@ public interface ICloneable
     object Clone();
 }
             </code></pre></div></div>
+            <p>The problem with ICloneable is that the Clone method does not explicitly specify whether it is performing a shallow or deep copy, so callers can never be sure. Hence, there is some discussion about making ICloneable obsolete in the .NET Framework. The MSDN documentation seems to hint that Clone should perform a deep copy, but it is never explicitly stated:</p>
+            <p>ICloneable的问题在于Clone方法没有明确指定它是执行浅克隆还是深克隆，因此调用者永远无法确认。从而，有一些关于在.NET Framework中使用ICloneable过时的讨论。MSDN文档似乎暗示克隆应该执行深层复制，但它从未明确说明:</p>
+            <p><strong>The ICloneable interface contains one member, Clone, which is intended to support cloning beyond that supplied by MemberWiseClone… The MemberwiseClone method creates a shallow copy…</strong></p>
+            <p><strong>ICloneable接口包含一个成员，Clone,用于支持除MemberWiseClone提供的克隆以外的成员...MemberwiseClone方法创建浅复制...</strong></p>
+            <h3>Type-Safe Clone(类型安全克隆)</h3>
+            <p>Another disadvantage of ICloneable is that the Clone method returns an object, hence every Clone call requires a cast:</p>
+            <p>ICloneable的另一个缺点是Clone方法返回一个Object对象,因此每个Clone调用都需要一个强制转换:</p>
+            <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+Person joe = new Person();
+joe.Name = "Joe Smith";
+Person joeClone = (Person)joe.Clone();
+            </code></pre></div></div>
+            <p>One way to avoid the cast is to provide your own type-safe Clone method. Note that you must still provide the ICloneable.Clone method to satisfy the ICloneable interface:</p>
+            <p>避免强制转换的一种方法时提供自己的类型安全克隆方法。请注意，你仍必须提供ICloneable.Clone方法以满足ICloneable接口:</p>
+            <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+public class Person : ICloneable
+{
+    public string Name;
+    object ICloneable.Clone()
+    {
+        return this.Clone();
+    }
+    public Person Clone()
+    {
+        return (Person)this.MemberwiseClone();
+    }
+}
+            </code></pre></div></div>
+            <h3>Clone Options(克隆选项)</h3>
+            <p>Following are some of the more common approaches to clone a C# object:</p>
+            <p>以下是克隆C#对象的一些常见方法:</p>
+            <li>
+                <ol>Clone Manually(手动克隆)</ol>
+                <p>One way to guarantee that an object will be cloned exactly how you want it is to manually clone every field in the object. The disadvantage to this method is it’s tedious and error prone: if you add or change a field in the class, chances are you will forget to update the Clone method. Note that care must be taken to avoid an infinite loop when cloning referenced objects that may refer back to the original object. Here is a simple example that performs a deep copy:</p>
+                <p>保证对象将按照你希望的方式克隆的一种方法是手动克隆对象中的每个字段。这种方法的缺点是繁琐且容易出错:如果你在类中添加或更改字段，则可能会忘记更新克隆的方法。请注意，在克隆可能引用回原始对象的引用对象时，必须注意避免无限循环。以下是执行深层复制的简单示例:</p>
+                <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+public class Person : ICloneable
+{
+    public string Name;
+    public Person Spouse;
+    public object Clone()
+    {
+        Person p = new Person();
+        p.Name = this.Name;
+        if (this.Spouse != null)
+            p.Spouse = (Person)this.Spouse.Clone();
+        return p;
+    }
+}
+            </code></pre></div></div>
+            </li>
         </div>
         
         <script>
