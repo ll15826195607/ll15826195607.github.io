@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.5">
+        <link href="/styles/main.css" rel="stylesheet" type="text/css">
+        <title>Windows线程总结</title>
+    </head>
+    <body>
+        <div class="inner">
+            <h2>Windows线程总结</h2>
+            <p>你是否知道：Windows为什么引入线程的概念？CLR线程和Windows线程之间的关系是什么？Windows如何调度线程？线程使用的开销如何？</p>
+            <h3>Windows为什么要支持线程</h3>
+            <p>只用一个执行线程的问题在于：长时间运行的任务会阻止其他任务执行。Windows线程的职责是对CPU进行虚拟化，Windows为每个进程都提供了该进程专用的线程(功能相当于一个CPU，可将线程理解成一个逻辑CPU)。</p>
+            <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+public partial class MainWindow : MainWindow
+{
+    public MainWindow()
+    {
+        InitializeComponent();
+        Task.Factory.StartNew(() =&gt;
+            {
+                InvokeMethodExample();
+            });
+    }
+
+    private void InvokeMethodExample()
+    {
+        Thread.Sleep(2000);
+        Dispatcher.Invoke(() =&gt;
+        {
+            btn1.Content = &quot;By Invoke&quot;;
+        });
+    }
+}
+            </code></pre></div></div>
+        </div>
+        
+        <script>
+            if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent))
+            {
+                document.body.classList.add('mobile');
+            }
+        </script>
+    </body>
+</html>

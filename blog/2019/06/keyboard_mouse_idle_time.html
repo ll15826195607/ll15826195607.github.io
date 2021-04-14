@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.5">
+        <link href="/styles/main.css" rel="stylesheet" type="text/css">
+        <title>如何获取键鼠的空闲时间</title>
+    </head>
+    <body>
+        <div class="inner">
+            <h2>如何获取键鼠的空闲时间</h2>
+            <p>在你编写应用程序时，是否遇到过这样一个需求：当用户在一段时间内，没有做任何键鼠操作时，关闭应用程序或重启应用程序。</p>
+            <h3>如何检测键鼠空闲状态</h3>
+            <P></P>
+            <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+public partial class MainWindow : Window
+{
+    private readonly DispatcherTimer KeyboardMouseIdleTimer = new DispatcherTimer();
+    [DllImport("user32.dll")]
+    static extern bool GetLastInputInfo(ref LASTINPUTINFO lii);
+    [StructLayout(LayoutKind.Sequential)]
+    struct LASTINPUTINFO
+    {
+        /// <summary>
+        /// 结构体容量
+        /// </summary>
+        [MarshalAs(UnmanagedType.U4)]
+        public UInt32 cbSize;
+        /// <summary>
+        /// 收到最后一个输入事件时的滴答计数
+        /// </summary>
+        [MarshalAs(UnmanagedType.U4)]
+        public UInt32 dwTime;
+    }
+    public MainWindow()
+    {
+        InitializeComponent();
+        this.Loaded += MainWindow_Loaded;
+    }
+
+    private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+    {
+        KeyboardMouseIdleTimer.Tick += KeyboardMouseIdleTimer_Tick;
+        KeyboardMouseIdleTimer.Interval = TimeSpan.FromMilliseconds(1000);
+        KeyboardMouseIdleTimer.Start();
+    }
+
+    private void KeyboardMouseIdleTimer_Tick(object sender, EventArgs e)
+    {
+        this.tb.Text = (GetKeyboardMouseIdleTime() / 1000).ToString();
+    }
+
+    private Int64 GetKeyboardMouseIdleTime()
+    {
+        LASTINPUTINFO info = new LASTINPUTINFO();
+        info.cbSize = (UInt32)Marshal.SizeOf(info);
+        Boolean result = GetLastInputInfo(ref info);
+        if (result == true)
+        {
+            Console.WriteLine(Environment.TickCount + " : " + info.dwTime);
+
+            return Environment.TickCount - info.dwTime;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+}
+            </code></pre></div></div>
+        </div>
+        
+        <script>
+            if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent))
+            {
+                document.body.classList.add('mobile');
+            }
+        </script>
+    </body>
+</html>
